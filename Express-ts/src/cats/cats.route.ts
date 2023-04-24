@@ -49,10 +49,81 @@ router.post("/cats", (req, res) => {
   try {
     const data = req.body;
     Cat.push(data);
-    console.log(data);
     res.status(200).send({
       success: true,
       data: {},
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// UPDATE certain Cat entire
+router.put("/cats/:id", (req, res) => {
+  try {
+    const body = req.body;
+    const params = req.params;
+    let result;
+    Cat.forEach((cat) => {
+      if (cat.id === params.id) {
+        cat = body;
+        result = cat;
+      }
+    });
+
+    res.status(200).send({
+      success: true,
+      data: {
+        cat: result,
+      },
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// UPDATE certain Cat part
+router.patch("/cats/:id", (req, res) => {
+  try {
+    const body = req.body;
+    const params = req.params;
+    let result;
+    Cat.forEach((cat) => {
+      if (cat.id === params.id) {
+        cat = { ...cat, ...body };
+        result = cat;
+      }
+    });
+
+    res.status(200).send({
+      success: true,
+      data: {
+        cat: result,
+      },
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// DELETE certain Cat
+router.delete("/cats/:id", (req, res) => {
+  try {
+    const params = req.params;
+    const newCat = Cat.filter((cat) => cat.id !== params.id); // Make New List without input id
+
+    res.status(200).send({
+      success: true,
+      data: newCat,
     });
   } catch (error) {
     res.status(400).send({
