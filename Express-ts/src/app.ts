@@ -3,37 +3,77 @@ import { Cat, CatType } from "./app.model"; // 상대 경로
 
 const app: express.Express = express();
 
+// Logging Middleware
 app.use((req, res, next) => {
-  // Middleware = Place on upper router
-  // app.use = Every Router Middleware
   console.log(req.rawHeaders[1]);
   console.log("This is Logging Middleware");
   next();
 });
 
-app.get("/cats/som", (req, res, next) => {
-  // app.get URL = Certain Router Middleware
-  console.log("This is Som Middleware");
-  next(); // Move to according url router
-});
+// JSON Middleware
+app.use(express.json());
 
 // Top-Bottom Router Search
-
-app.get("/", (req: express.Request, res: express.Response) => {
-  // router
-  res.send({ cats: Cat });
+// READ Every Cat
+app.get("/cats", (req, res) => {
+  try {
+    const cats = Cat;
+    res.status(200).send({
+      success: true,
+      data: {
+        cats,
+      },
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message,
+    });
+  }
 });
 
-app.get("/cats/blue", (req, res, next: express.NextFunction) => {
-  res.send({ blue: Cat[0] });
+// READ Certain Cat using id
+app.get("/cats/:id", (req, res) => {
+  // dynamic routing :id
+  try {
+    const params = req.params.id;
+    const cat = Cat.find((cat) => {
+      return cat.id === params;
+    });
+    res.status(200).send({
+      success: true,
+      data: {
+        cat,
+      },
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message,
+    });
+  }
 });
 
-app.get("/cats/som", (req, res) => {
-  res.send({ som: Cat[1] });
+// CREATE New Cat
+app.post("/cats", (req, res) => {
+  try {
+    const data = req.body;
+    Cat.push(data);
+    console.log(data);
+    res.status(200).send({
+      success: true,
+      data: {},
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message,
+    });
+  }
 });
 
+// 404 Middleware
 app.use((req, res, next) => {
-  // This Middleware Means Any Router didn't match req URL
   console.log("This is Logging Middleware");
   res.send({ error: "404 Not Found Error" });
 });
