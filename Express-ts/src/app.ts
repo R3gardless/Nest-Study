@@ -1,27 +1,52 @@
 import * as express from "express";
 import catRouter from "./cats/cats.route";
 
-const app: express.Express = express();
+// Singleton Pattern
+// Efficient Memory Usage
+class Server {
+  public app: express.Application;
 
-// Logging Middleware
-app.use((req, res, next) => {
-  console.log(req.rawHeaders[1]);
-  console.log("This is Logging Middleware");
-  next();
-});
+  constructor() {
+    const app: express.Application = express();
+    this.app = app;
+  }
 
-// JSON Middleware
-app.use(express.json());
+  private setRoute() {
+    // Router = Router just Middleware
+    this.app.use(catRouter);
+  }
 
-// Router = Router just Middleware
-app.use(catRouter);
+  private setMiddleware() {
+    // Logging Middleware
+    this.app.use((req, res, next) => {
+      console.log(req.rawHeaders[1]);
+      console.log("This is Logging Middleware");
+      next();
+    });
 
-// 404 Middleware
-app.use((req, res, next) => {
-  console.log("This is Logging Middleware");
-  res.send({ error: "404 Not Found Error" });
-});
+    // JSON Middleware
+    this.app.use(express.json());
 
-app.listen(8000, () => {
-  console.log("Server is on....");
-});
+    this.setRoute();
+
+    // 404 Middleware
+    this.app.use((req, res, next) => {
+      console.log("This is Logging Middleware");
+      res.send({ error: "404 Not Found Error" });
+    });
+  }
+
+  public listen() {
+    this.setMiddleware();
+    this.app.listen(8000, () => {
+      console.log("Server is on....");
+    });
+  }
+}
+
+function init() {
+  const server = new Server();
+  server.listen();
+}
+
+init();
