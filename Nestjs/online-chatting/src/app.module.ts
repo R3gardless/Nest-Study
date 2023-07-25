@@ -10,12 +10,7 @@ import * as mongoose from 'mongoose';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-    }),
+    MongooseModule.forRoot('mongodb://localhost:27017'),
     ChatsModule,
   ],
   controllers: [AppController],

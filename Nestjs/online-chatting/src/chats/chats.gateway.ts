@@ -36,7 +36,7 @@ export class ChatsGateway
     const user = await this.socketModel.findOne({ id: socket.id });
     if (user) {
       socket.broadcast.emit('disconnect_user', user.username);
-      await user.delete();
+      await user.deleteOne();
     }
     this.logger.log(`disconnected : ${socket.id} ${socket.nsp.name}`);
   }
